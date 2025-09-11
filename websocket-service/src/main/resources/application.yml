@@ -1,0 +1,62 @@
+server:
+  port: ${SERVER_PORT:9013}
+  servlet:
+    context-path: /websocket-service
+
+eureka:
+  instance:
+    preferIpAddress: false
+    hostname: localhost
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8762/eureka/
+
+spring:
+  application:
+    name: websocket-service
+  jpa:
+    database: POSTGRESQL
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+  datasource:
+    url: jdbc:postgresql://${DATABASE_HOST:localhost}:${DATABASE_PORT:5445}/${DATABASE_NAME:websocket-service}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:12345678}
+    driverClassName: org.postgresql.Driver
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:9004/oauth2/jwks
+      client:
+        registration:
+          api-communication:
+            scope: read
+            provider: api-communication-provider
+            client-secret: dkl8UIp8HcCNvnj2F90/OXLtRc/vFlzVYT7rXu04iTg=
+            authorization-grant-type: client_credentials
+            client-id: api-communication
+        provider:
+          api-communication-provider:
+            token-uri: http://localhost:9004/oauth2/token
+
+logging:
+  level:
+    org:
+      springframework:
+        security: ${SPRING_SECURITY_LOG_LEVEL:TRACE}
+  pattern:
+    console: ${LOGPATTERN_CONSOLE:%green(%d{HH:mm:ss.SSS}) %blue(%-5level) %red([%thread])
+      %yellow(%logger{15}) - %msg%n}
+
+redis:
+  host: localhost
+  port: 6379
+  password: a4rT44Rce32w87htRft56
+  socketTimeout: 400
+  commandTimeout: 600
+  database: 0

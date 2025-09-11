@@ -1,0 +1,277 @@
+volumes:
+  pg_data:
+  redis_data:
+networks:
+  app-network:
+    driver: bridge
+
+services:
+
+  db:
+    image: postgres:alpine
+    restart: unless-stopped
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345678
+      POSTGRES_HOST_AUTH_METHOD: "scram-sha-256"
+    ports:
+      - "5445:5432"
+    networks:
+      - app-network
+
+  consul:
+    container_name: consul
+    restart: unless-stopped
+    image: consul:1.14
+    environment:
+      - JDK_JAVA_OPTIONS=-Xdebug -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+      - SERVER_PORT=8080
+    healthcheck:
+      test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8500/v1/status/leader" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    ports:
+      - "8500:8500"  # Web UI
+      - "8600:8600/udp"  # DNS
+    networks:
+      - app-network
+
+  gateway-service-svc:
+    container_name: gateway-service-svc
+    restart: unless-stopped
+    healthcheck:
+      test: "curl --fail --silent localhost:8080/gateway-service/actuator/health | grep UP || exit 1"
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+    ports:
+      - "8081:8080"
+      - "5081:5005"
+    environment:
+      - JDK_JAVA_OPTIONS=-Xdebug -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+      - SERVER_PORT=8080
+    build:
+      context: ../../microservice-sample
+      dockerfile: .dev/Dockerfile
+      args:
+        FOLDER: "gateway-service"
+    depends_on:
+      consul:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  auth-service-svc:
+    container_name: auth-service-svc
+    restart: unless-stopped
+    healthcheck:
+      test: "curl --fail --silent localhost:8080/auth-service/actuator/health | grep UP || exit 1"
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+    ports:
+      - "8082:8080"
+      - "5082:5005"
+    depends_on:
+      consul:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    environment:
+      - JDK_JAVA_OPTIONS=-Xdebug -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=auth-service
+      - DATABASE_USERNAME=postgres
+      - DATABASE_PASSWORD=12345678
+      - SERVER_PORT=8080
+    build:
+      context: ../../microservice-sample
+      dockerfile: .dev/Dockerfile
+      args:
+        FOLDER: "auth-service"
+    networks:
+      - app-network
+  data-service-svc:
+    container_name: data-service-svc
+    restart: unless-stopped
+    healthcheck:
+      test: "curl --fail --silent localhost:8080/data-service/actuator/health | grep UP || exit 1"
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+    ports:
+      - "8083:8080"
+      - "5083:5005"
+    depends_on:
+      consul:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    environment:
+      - JDK_JAVA_OPTIONS=-Xdebug -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=data-service
+      - DATABASE_USERNAME=postgres
+      - DATABASE_PASSWORD=12345678
+      - SERVER_PORT=8080
+    build:
+      context: ../../microservice-sample
+      dockerfile: .dev/Dockerfile
+      args:
+        FOLDER: "data-service"
+    networks:
+      - app-network
+
+  oauth2-ui-app:
+    build:
+      context: ../oauth2-ui
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../oauth2-ui:/app
+      - /app/node_modules
+
+  kafka-event-router-svc:
+    restart: unless-stopped
+    healthcheck:
+      test: "curl --fail --silent localhost:8080/kafka-event-router/actuator/health | grep UP || exit 1"
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+    ports:
+      - "8086:8080"
+      - "5086:5005"
+    depends_on:
+      kafka:
+        condition: service_healthy
+      consul:
+        condition: service_healthy
+    environment:
+      - JDK_JAVA_OPTIONS=-Xdebug -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+    build:
+      context: ../../microservice-sample
+      dockerfile: .dev/Dockerfile
+      args:
+        FOLDER: "kafka-event-router"
+    networks:
+      - app-network
+
+  seed:
+    image: barrypiccinni/psql-curl
+    restart: 'no'
+    entrypoint: >
+      sh -c "
+      PGPASSWORD=12345678 psql -h db -U postgres -d auth-service -f /tmp/seed.sql
+      "
+    volumes:
+      - ./seed.sql:/tmp/seed.sql
+    environment:
+      PGPASSWORD: 12345678
+    depends_on:
+      db:
+        condition: service_healthy
+      auth-service-svc:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+    volumes:
+      - redis_data:/data
+    command: redis-server --requirepass a4rT44Rce32w87htRft56 --save 60 1 --loglevel warning
+    healthcheck:
+      test: [ "CMD", "redis-cli", "-a", "a4rT44Rce32w87htRft56", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  zoo:
+    image: confluentinc/cp-zookeeper:7.3.2
+    hostname: zookeeper
+    restart: unless-stopped
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: zoo:2888:3888
+    networks:
+      - app-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.3.2
+    restart: unless-stopped
+    ports:
+      - "9092:9092"
+    healthcheck:
+      test: [ "CMD-SHELL", " nc -z localhost 9092 || exit -1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:19092,EXTERNAL://kafka:9092,DOCKER://host.docker.internal:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,DOCKER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_ZOOKEEPER_CONNECT: "zoo:2181"
+      KAFKA_BROKER_ID: 1
+      KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_JMX_PORT: 9999
+      KAFKA_JMX_HOSTNAME: kafka
+      KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.authorizer.AclAuthorizer
+      KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "true"
+    depends_on:
+      - zoo
+    networks:
+      - app-network
+
+  kafdrop:
+    image: obsidiandynamics/kafdrop
+    restart: unless-stopped
+    ports:
+      - "9087:9000"
+    depends_on:
+      - zoo
+      - kafka
+    environment:
+      KAFKA_BROKERCONNECT: "PLAINTEXT://kafka:9092"
+      JVM_OPTS: "-Xms16M -Xmx48M -XX:-TieredCompilation -XX:+UseStringDeduplication -noverify"
+    networks:
+      - app-network

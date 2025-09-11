@@ -1,0 +1,49 @@
+spring:
+  application:
+    name: kafka-event-router
+  cloud:
+    consul:
+      host: consul
+      port: 8500
+      discovery:
+        register: true
+        deregister: true
+        prefer-ip-address: true
+        instance-id: ${spring.application.name}:${spring.cloud.client.hostname}:${server.port}
+        health-check-path: /kafka-event-router/actuator/health
+        health-check-interval: 10s
+server:
+  port: ${SERVER_PORT:9009}
+  servlet:
+    context-path: /kafka-event-router
+
+apps:
+  email-service:
+    consumer-topic-name: email-service-topic
+    events: SendEmailActivationEvent,ChangeEmailEvent,ForgotPasswordEmailEvent,UserInfoChangedEvent
+  data-service:
+    consumer-topic-name: data-service-topic
+    events: UserInfoChangedEvent
+
+project:
+  kafka:
+    bootstrap-servers: kafka:9092
+    input-topic: project-global-topic
+    application-id: kafka-event-router-stream
+    client-id: kafka-event-router-client
+    dead-letter-topic: kafka-event-router-dead-letter-topic
+    stream:
+      bootstrap-servers: kafka:9092
+      input-topic: project-global-topic
+      application-id: kafka-event-router-stream
+      client-id: kafka-event-router-client
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+        exclude:
+  endpoint:
+    health:
+      show-details: always

@@ -1,0 +1,27 @@
+### Java / Spring Boot ###
+**/target/
+**/build/
+!.mvn/wrapper/maven-wrapper.jar
+
+# IDE dosyaları
+.idea/
+*.iml
+*.classpath
+*.project
+*.settings/
+*.log
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+### Node / Frontend ###
+oauth2-ui/node_modules/
+oauth2-ui/dist/
+oauth2-ui/build/
+
+# Optional: frontend cache
+oauth2-ui/.parcel-cache/
+oauth2-ui/.next/
+oauth2-ui/.nuxt/
+oauth2-ui/.turbo/

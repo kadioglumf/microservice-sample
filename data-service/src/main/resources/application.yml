@@ -1,0 +1,73 @@
+server:
+  port: ${SERVER_PORT:9008}
+  servlet:
+    context-path: /data-service
+
+spring:
+  application:
+    name: data-service
+  cloud:
+    consul:
+      host: consul
+      port: 8500
+      discovery:
+        register: true
+        deregister: true
+        prefer-ip-address: true
+        instance-id: ${spring.application.name}:${spring.cloud.client.hostname}:${server.port}
+        health-check-path: /data-service/actuator/health
+        health-check-interval: 10s
+  jpa:
+    database: POSTGRESQL
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+  datasource:
+    url: jdbc:postgresql://${DATABASE_HOST:localhost}:${DATABASE_PORT:5445}/${DATABASE_NAME:data-service}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:12345678}
+    driverClassName: org.postgresql.Driver
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:9004/oauth2/jwks
+      client:
+        registration:
+          api-communication:
+            scope: read
+            provider: api-communication-provider
+            client-secret: {YOUR_API_COMMUNICATION_CLIENT_SECRET}
+            authorization-grant-type: client_credentials
+            client-id: api-communication
+        provider:
+          api-communication-provider:
+            token-uri: http://localhost:9004/oauth2/token
+
+logging:
+  level:
+    org:
+      springframework:
+        security: ${SPRING_SECURITY_LOG_LEVEL:TRACE}
+  pattern:
+    console: ${LOGPATTERN_CONSOLE:%green(%d{HH:mm:ss.SSS}) %blue(%-5level) %red([%thread])
+      %yellow(%logger{15}) - %msg%n}
+
+messagebird:
+  accesstoken: K3aP79np1NEAtDtZKSX1scOrX
+
+google:
+  recaptcha:
+    secret:
+      key: 6LflBx0lAAAAAOKecGv302jYCK5R7zK_INafpVdH
+    verify:
+      url: https://www.google.com/recaptcha/api/siteverify
+
+redis:
+  host: localhost
+  port: 6379
+  password: a4rT44Rce32w87htRft56
+  socketTimeout: 400
+  commandTimeout: 600
+  database: 0

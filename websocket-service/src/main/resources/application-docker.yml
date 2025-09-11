@@ -1,0 +1,71 @@
+server:
+  servlet:
+    context-path: /websocket-service
+
+
+eureka:
+  instance:
+    preferIpAddress: true
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+  client:
+    register-with-eureka: 'true'
+    serviceUrl:
+      defaultZone: http://discovery-service-svc:8080/discovery-service/eureka/
+
+spring:
+  application:
+    name: websocket-service
+  jpa:
+    database: POSTGRESQL
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+  datasource:
+    url: jdbc:postgresql://${DATABASE_HOST:localhost}:${DATABASE_PORT:5445}/${DATABASE_NAME:websocket-service}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:12345678}
+    driverClassName: org.postgresql.Driver
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://auth-service-svc:8080/auth-service/oauth2/jwks
+      client:
+        registration:
+          api-communication:
+            scope: read
+            provider: api-communication-provider
+            client-secret: 'dkl8UIp8HcCNvnj2F90/OXLtRc/vFlzVYT7rXu04iTg='
+            authorization-grant-type: client_credentials
+            client-id: api-communication
+        provider:
+          api-communication-provider:
+            token-uri: http://auth-service-svc:8080/auth-service/oauth2/token
+
+logging:
+  level:
+    org:
+      springframework:
+        security: ${SPRING_SECURITY_LOG_LEVEL:TRACE}
+  pattern:
+    console: ${LOGPATTERN_CONSOLE:%green(%d{HH:mm:ss.SSS}) %blue(%-5level) %red([%thread])
+      %yellow(%logger{15}) - %msg%n}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+        exclude:
+  endpoint:
+    health:
+      show-details: always
+
+redis:
+  host: redis
+  port: 6379
+  password: a4rT44Rce32w87htRft56
+  socketTimeout: 400
+  commandTimeout: 600
+  database: 0

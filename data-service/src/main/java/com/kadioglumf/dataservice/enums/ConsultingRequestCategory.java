@@ -1,0 +1,24 @@
+package com.kadioglumf.dataservice.enums;
+
+public enum ConsultingRequestCategory {
+  AUTO_INSURANCE,
+  HOUSEHOLD_INSURANCE,
+  HEALTH_INSURANCE,
+  PET_INSURANCE,
+  LEGAL_INSURANCE,
+  LIFE_INSURANCE,
+  ASISA_MEMBER,
+  TCS_MEMBER,
+  CREDIT_FINANCE,
+  HYPOTHEC_FINANCE,
+  BASLER,
+  DEXTRA,
+  EGK,
+  MUTUEL,
+  HELSANA,
+  ORION,
+  SANITAS,
+  SYMPANY,
+  SIMPEGO,
+  SWICA
+}

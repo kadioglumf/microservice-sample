@@ -1,0 +1,142 @@
+server:
+  port: ${SERVER_PORT:9004}
+  servlet:
+    context-path: /auth-service
+
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  application:
+    name: auth-service
+  cloud:
+    consul:
+      host: consul
+      port: 8500
+      discovery:
+        register: true
+        deregister: true
+        prefer-ip-address: true
+        instance-id: ${spring.application.name}:${spring.cloud.client.hostname}:${server.port}
+        health-check-path: /auth-service/actuator/health
+        health-check-interval: 10s
+  jpa:
+    database: POSTGRESQL
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+  datasource:
+    url: jdbc:postgresql://${DATABASE_HOST:localhost}:${DATABASE_PORT:5445}/${DATABASE_NAME:auth-service}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:12345678}
+    driverClassName: org.postgresql.Driver
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-secret: ${GOOGLE_CLIENT_SECRET:{YOUR_GOOGLE_CLIENT_SECRET}}
+            client-id: ${GOOGLE_CLIENT_ID:{YOUR_GOOGLE_CLIENT_ID}}
+            scope: profile, email
+          facebook:
+            client-secret: ${FACEBOOK_CLIENT_SECRET:{YOUR_FACEBOOK_CLIENT_SECRET}}
+            client-id: ${FACEBOOK_CLIENT_ID:{YOUR_FACEBOOK_CLIENT_ID}}
+            scope: public_profile, email
+          api-communication:
+            scope: read
+            provider: api-communication-provider
+            client-secret: '{YOUR_API_COMMUNICATION_CLIENT_SECRET}'
+            authorization-grant-type: client_credentials
+            client-id: api-communication
+        provider:
+          api-communication-provider:
+            token-uri: http://localhost:9004/auth-service/oauth2/token
+      authorizationserver:
+        issuer: http://localhost:9004
+        client:
+          api-communication:
+            registration:
+              client-authentication-methods: client_secret_basic
+              scopes: read
+              client-id: api-communication
+              authorization-grant-types: client_credentials
+              client-secret: '{YOUR_API_COMMUNICATION_CLIENT_SECRET}'
+            require-authorization-consent: 'true'
+
+
+
+logging:
+  level:
+    org:
+      springframework:
+        security: ${SPRING_SECURITY_LOG_LEVEL:TRACE}
+  pattern:
+    console: ${LOGPATTERN_CONSOLE:%green(%d{HH:mm:ss.SSS}) %blue(%-5level) %red([%thread])
+      %yellow(%logger{15}) - %msg%n}
+
+redis:
+  host: localhost
+  port: 6379
+  password: a4rT44Rce32w87htRft56
+  socketTimeout: 400
+  commandTimeout: 600
+  database: 0
+
+project:
+  refreshToken:
+    expiration:
+      seconds: 2592000
+  accessToken:
+    expiration:
+      seconds: 3600
+  oauth2:
+    redirectUri: http://localhost:3000/oauth2/redirect
+  jwt:
+    keyId: 9491db25-5aae-42f5-9604-8deabbf80b58
+    alias: microservice-sample-jwt
+    password: d46d585e-f527-43a0-b326-dec91bffb922
+    jksFileName: microservice-sample-jwt.jks
+    expiration:
+      changeEmail: 3600000
+      forgotPassword: 3600000
+      emailActivateUser: 3600000
+  kafka:
+    kafka-address-with-port: kafka:9092
+    group-id: microservice-sample-auth-service
+    enable-consumer: true
+    enable-producer: true
+    retry:
+      backoff:
+        ms: 100000
+    producer:
+      bootstrap-servers: kafka:9092
+      retries: 0
+      order-match-topic:
+        name: project-producer-order-match-topic
+      topic:
+        name: project-global-topic
+        replica: 1
+        auto-create-topics: true
+    producer-topic:
+      partition-count: 1
+    consumer:
+      bootstrap-servers: kafka:9092
+      group-id: microservice-sample-auth-service-group
+      auto-offset-reset: earliest
+      order-match-topic:
+        name: project-consumer-order-match-topic
+      topic:
+        name: auth-service-topic
+        partition-count: 2
+        replica: 1
+        auto-create-topics: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+        exclude:
+  endpoint:
+    health:
+      show-details: always

@@ -1,0 +1,18 @@
+{
+  "SendEmailActivationEvent": [
+    "email-service-topic"
+  ],
+  "ChangeEmailEvent": [
+    "email-service-topic"
+  ],
+  "ForgotPasswordEmailEvent": [
+    "email-service-topic"
+  ],
+  "UserInfoChangedEvent": [
+    "email-service-topic",
+    "data-service-topic"
+  ],
+  "CreateContactUsMailEvent": [
+    "email-service-topic"
+  ]
+}
