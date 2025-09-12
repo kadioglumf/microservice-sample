@@ -2,7 +2,6 @@ package com.kadioglumf.websocket.controller;
 
 import com.kadioglumf.websocket.core.enums.RoleTypeEnum;
 import com.kadioglumf.websocket.core.secure.Secure;
-import com.kadioglumf.websocket.payload.request.WebSocketRequest;
 import com.kadioglumf.websocket.payload.request.notification.NotificationDeleteRequest;
 import com.kadioglumf.websocket.payload.request.notification.NotificationMarkAsReadRequest;
 import com.kadioglumf.websocket.payload.response.notification.NotificationResponse;
@@ -26,14 +25,14 @@ public class NotificationController {
 
   @GetMapping(value = "/getAll")
   @Operation(summary = "Gets notifications of user")
-  @Secure(role = {RoleTypeEnum.ROLE_ADMIN, RoleTypeEnum.ROLE_PARTNER, RoleTypeEnum.ROLE_USER})
+  @Secure(role = {RoleTypeEnum.ROLE_ADMIN, RoleTypeEnum.ROLE_USER})
   public ResponseEntity<List<NotificationResponse>> fetch() {
     return ResponseEntity.ok(notificationService.fetch());
   }
 
   @DeleteMapping(value = "/deleteAll")
   @Operation(summary = "Deletes all notifications of user")
-  @Secure(role = {RoleTypeEnum.ROLE_ADMIN, RoleTypeEnum.ROLE_PARTNER, RoleTypeEnum.ROLE_USER})
+  @Secure(role = {RoleTypeEnum.ROLE_ADMIN, RoleTypeEnum.ROLE_USER})
   public ResponseEntity<Void> deleteAll() {
     notificationService.deleteAll();
     return ResponseEntity.ok().build();
@@ -41,7 +40,7 @@ public class NotificationController {
 
   @PutMapping(value = "/markAsRead")
   @Operation(summary = "Marks notifications of user as read")
-  @Secure(role = {RoleTypeEnum.ROLE_ADMIN, RoleTypeEnum.ROLE_PARTNER, RoleTypeEnum.ROLE_USER})
+  @Secure(role = {RoleTypeEnum.ROLE_ADMIN, RoleTypeEnum.ROLE_USER})
   public ResponseEntity<Void> markAsRead(
       @RequestBody @Valid NotificationMarkAsReadRequest request) {
     notificationService.markAsRead(request.getNotificationIds());
@@ -50,7 +49,7 @@ public class NotificationController {
 
   @DeleteMapping(value = "/deleteByIds")
   @Operation(summary = "Delete notifications of user")
-  @Secure(role = {RoleTypeEnum.ROLE_ADMIN, RoleTypeEnum.ROLE_PARTNER, RoleTypeEnum.ROLE_USER})
+  @Secure(role = {RoleTypeEnum.ROLE_ADMIN, RoleTypeEnum.ROLE_USER})
   public ResponseEntity<Void> deleteByNotificationIds(
       @RequestBody @Valid NotificationDeleteRequest request) {
     notificationService.deleteByNotificationIds(request.getNotificationIds());
@@ -65,9 +64,9 @@ public class NotificationController {
     return ResponseEntity.ok().build();
   }
 
-  @PostMapping("/sendNotification")
+  /*  @PostMapping("/sendNotification")
   @Secure(role = RoleTypeEnum.ROLE_SYSTEM)
   public void sendNotification(@RequestBody @Valid WebSocketRequest request) {
     webSocketService.sendNotification(request);
-  }
+  }*/
 }

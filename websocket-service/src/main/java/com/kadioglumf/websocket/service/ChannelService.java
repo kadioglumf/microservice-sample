@@ -113,7 +113,7 @@ public class ChannelService {
               var users = authServiceAdapter.getUserDetailsByUserId(userId);
               if (!CollectionUtils.isEmpty(users)
                   && channelModel.getRoles().stream()
-                      .anyMatch(r -> users.getFirst().getRole().equals(r))) {
+                      .anyMatch(r -> users.getFirst().getRoles().contains(r))) {
                 if (channelModel.getUserChannelPreferences().stream()
                     .noneMatch(c -> c.getUserId().equals(userId))) {
                   var preference =

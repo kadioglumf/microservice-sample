@@ -124,12 +124,7 @@ public class SocialLeadService {
 
   private SocialLeadModel getById(Long id) {
     Optional<SocialLeadModel> socialLeadModel;
-    if (AuthUtils.isAdmin()) {
-      socialLeadModel = socialLeadRepository.findById(id);
-    } else {
-      var partnerId = AuthUtils.getUserId();
-      socialLeadModel = socialLeadRepository.findByIdAndAssignedPartnerId(id, partnerId);
-    }
+    socialLeadModel = socialLeadRepository.findById(id);
     if (socialLeadModel.isEmpty()) {
       throw new BusinessException(ExceptionConstants.SOCIAL_LEAD_NOT_FOUND);
     }

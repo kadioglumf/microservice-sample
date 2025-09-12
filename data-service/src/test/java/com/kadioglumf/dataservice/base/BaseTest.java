@@ -14,6 +14,8 @@ import org.mockito.MockedStatic;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.Set;
+
 @ActiveProfiles("test")
 @EnableAutoConfiguration
 public abstract class BaseTest {
@@ -50,19 +52,11 @@ public abstract class BaseTest {
   }
 
   protected UserDto adminUser() {
-    return UserDto.builder().id(1L).email("admin@mail.com").role(RoleTypeEnum.ROLE_ADMIN).build();
-  }
-
-  protected UserDto partnerUser() {
-    return UserDto.builder()
-        .id(3L)
-        .email("partner@mail.com")
-        .role(RoleTypeEnum.ROLE_PARTNER)
-        .build();
+    return UserDto.builder().id(1L).email("admin@mail.com").roles(Set.of(RoleTypeEnum.ROLE_ADMIN)).build();
   }
 
   protected UserDto user() {
-    return UserDto.builder().id(2L).email("user@mail.com").role(RoleTypeEnum.ROLE_USER).build();
+    return UserDto.builder().id(2L).email("user@mail.com").roles(Set.of(RoleTypeEnum.ROLE_USER)).build();
   }
 
   @AfterEach

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(value = "event-routing", produces = MediaType.APPLICATION_JSON_VALUE)
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 public class RouterController {
   private final RouterRules routerRules;
 

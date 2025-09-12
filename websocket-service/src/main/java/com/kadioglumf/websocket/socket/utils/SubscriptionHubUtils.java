@@ -108,7 +108,7 @@ public final class SubscriptionHubUtils {
 
       boolean isRoleFound =
           request.getRole() != null
-              && subscriber.getUserDetails().getRole().equals(request.getRole());
+              && subscriber.getUserDetails().getRoles().contains(request.getRole());
 
       if (isRoleFound) {
         subscriber.info(request);

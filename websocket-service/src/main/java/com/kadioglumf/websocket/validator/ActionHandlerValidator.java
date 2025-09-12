@@ -6,20 +6,20 @@ import com.kadioglumf.websocket.core.exception.BusinessException;
 import com.kadioglumf.websocket.enums.WsFailureType;
 import com.kadioglumf.websocket.payload.request.WsSendMessageRequest;
 import com.kadioglumf.websocket.socket.RealTimeSession;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 @Log4j2
 public class ActionHandlerValidator {
   private final ChannelValidator channelValidator;
 
-  public void validSubscribe(String channel, RoleTypeEnum role) {
-    channelValidator.valid(channel, role);
+  public void validSubscribe(String channel, Set<RoleTypeEnum> roles) {
+    channelValidator.valid(channel, roles);
   }
 
   public void validUnSubscribe(String channel, RealTimeSession session) {
@@ -39,7 +39,7 @@ public class ActionHandlerValidator {
   }
 
   public boolean isValidSend(RealTimeSession session, WsSendMessageRequest request) {
-    channelValidator.valid(request.getChannel(), session.getUserDetails().getRole());
+    channelValidator.valid(request.getChannel(), session.getUserDetails().getRoles());
     if (request.getCategory() == null || request.getInfoType() == null) {
       session.fail(WsFailureType.MISSING_FIELD_FAILURE.getValue());
       return false;

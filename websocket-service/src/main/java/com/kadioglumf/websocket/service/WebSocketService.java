@@ -1,6 +1,6 @@
 package com.kadioglumf.websocket.service;
 
-import com.kadioglumf.websocket.payload.request.WebSocketRequest;
+import com.kadioglumf.websocket.event.BaseWebsocketEvent;
 import com.kadioglumf.websocket.payload.request.WsSendMessageRequest;
 import com.kadioglumf.websocket.socket.utils.SubscriptionHubUtils;
 import lombok.RequiredArgsConstructor;
@@ -11,15 +11,15 @@ import org.springframework.stereotype.Service;
 public class WebSocketService {
   private final NotificationService notificationService;
 
-  public void sendNotification(WebSocketRequest request) {
+  public void sendNotification(BaseWebsocketEvent event) {
     WsSendMessageRequest sendMessageRequest = new WsSendMessageRequest();
-    sendMessageRequest.setChannel(request.getChannel());
-    sendMessageRequest.setPayload(request.getMessage());
-    sendMessageRequest.setCategory(request.getCategory());
-    sendMessageRequest.setInfoType(request.getInfoType());
-    sendMessageRequest.setSendingType(request.getSendingType());
-    sendMessageRequest.setUserId(request.getUserId());
-    sendMessageRequest.setRole(request.getRole());
+    sendMessageRequest.setChannel(event.getChannel());
+    sendMessageRequest.setPayload(event.getMessage());
+    sendMessageRequest.setCategory(event.getCategory());
+    sendMessageRequest.setInfoType(event.getInfoType());
+    sendMessageRequest.setSendingType(event.getSendingType());
+    sendMessageRequest.setUserId(event.getUserId());
+    sendMessageRequest.setRole(event.getRole());
 
     SubscriptionHubUtils.send(sendMessageRequest);
     notificationService.save(sendMessageRequest);

@@ -33,4 +33,11 @@ public class UserController {
   public UserDetailsResponse getUserDetails() {
     return userService.getUserDetails();
   }
+
+  @PostMapping("/updateUserDetails")
+  @Secure(role = {RoleTypeEnum.ROLE_USER})
+  public MessageResponse updateUserDetails() {
+    userService.updateUserDetails();
+    return new MessageResponse("User details updated successfully!");
+  }
 }

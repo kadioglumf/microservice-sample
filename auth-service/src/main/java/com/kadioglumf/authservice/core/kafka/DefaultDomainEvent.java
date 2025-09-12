@@ -19,7 +19,7 @@ import lombok.experimental.SuperBuilder;
 public class DefaultDomainEvent implements DomainEvent, Serializable {
   private Locale locale;
   private LocalDateTime transactionTime;
-  private String userId;
+  private Long userId;
   private long offset;
 
   public DefaultDomainEvent() {

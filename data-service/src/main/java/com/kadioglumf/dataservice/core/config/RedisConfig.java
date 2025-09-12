@@ -70,10 +70,6 @@ public class RedisConfig {
     cacheConfigurations.put(
         RedisCacheValueConstants.FIVE_MINUTE_CACHE_KEY,
         createCacheConfiguration(Duration.ofMinutes(5)));
-    cacheConfigurations.put(
-        RedisCacheValueConstants.CANTON_CACHE_KEY, createCacheConfiguration(Duration.ofDays(1)));
-    cacheConfigurations.put(
-        RedisCacheValueConstants.LOCATION_CACHE_KEY, createCacheConfiguration(Duration.ofDays(1)));
 
     return RedisCacheManager.builder(redisConnectionFactory)
         .withInitialCacheConfigurations(cacheConfigurations)

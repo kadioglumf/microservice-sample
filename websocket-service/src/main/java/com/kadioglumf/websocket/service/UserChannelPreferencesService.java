@@ -3,21 +3,19 @@ package com.kadioglumf.websocket.service;
 import com.kadioglumf.websocket.adapter.AuthServiceAdapter;
 import com.kadioglumf.websocket.constant.CacheConstants;
 import com.kadioglumf.websocket.model.UserChannelPreferencesModel;
-import com.kadioglumf.websocket.payload.response.GetUserDetailsResponse;
 import com.kadioglumf.websocket.payload.response.channel.UserPreferencesResponse;
 import com.kadioglumf.websocket.repository.ChannelRepository;
 import com.kadioglumf.websocket.repository.UserChannelPreferencesRepository;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 @Service
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 public class UserChannelPreferencesService {
   private final UserChannelPreferencesRepository userChannelPreferencesRepository;
   private final ChannelRepository channelRepository;
@@ -31,9 +29,7 @@ public class UserChannelPreferencesService {
     var preferences = userChannelPreferencesRepository.findAllByUserId(userId);
     if (CollectionUtils.isEmpty(preferences)) {
       var users = authServiceAdapter.getUserDetailsByUserId(userId);
-      var channels =
-          channelRepository.findAllByRoles(
-              users.stream().map(GetUserDetailsResponse::getRole).findFirst().orElse(null));
+      var channels = channelRepository.findAllByRoles(users.getFirst().getRoles());
       channels.forEach(
           c -> {
             var preference =

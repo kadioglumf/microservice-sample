@@ -3,6 +3,8 @@ server:
     context-path: /data-service
 
 spring:
+  main:
+    allow-bean-definition-overriding: true
   application:
     name: data-service
   cloud:
@@ -37,7 +39,7 @@ spring:
           api-communication:
             scope: read
             provider: api-communication-provider
-            client-secret: '{YOUR_API_COMMUNICATION_CLIENT_SECRET}'
+            client-secret: 'dkl8UIp8HcCNvnj2F90/OXLtRc/vFlzVYT7rXu04iTg='
             authorization-grant-type: client_credentials
             client-id: api-communication
         provider:
@@ -63,16 +65,6 @@ management:
     health:
       show-details: always
 
-messagebird:
-  accesstoken: K3aP79np1NEAtDtZKSX1scOrX
-
-google:
-  recaptcha:
-    secret:
-      key: 6LflBx0lAAAAAOKecGv302jYCK5R7zK_INafpVdH
-    verify:
-      url: https://www.google.com/recaptcha/api/siteverify
-
 redis:
   host: redis
   port: 6379
@@ -80,3 +72,35 @@ redis:
   socketTimeout: 400
   commandTimeout: 600
   database: 0
+  
+project:
+  kafka:
+    kafka-address-with-port: kafka:9092
+    group-id: microservice-sample-data-service
+    enable-consumer: true
+    enable-producer: true
+    retry:
+      backoff:
+        ms: 100000
+    producer:
+      bootstrap-servers: kafka:9092
+      retries: 0
+      order-match-topic:
+        name: project-producer-order-match-topic
+      topic:
+        name: project-global-topic
+        replica: 1
+        auto-create-topics: true
+    producer-topic:
+      partition-count: 1
+    consumer:
+      bootstrap-servers: kafka:9092
+      group-id: microservice-sample-data-service-group
+      auto-offset-reset: earliest
+      order-match-topic:
+        name: project-consumer-order-match-topic
+      topic:
+        name: data-service-topic
+        partition-count: 2
+        replica: 1
+        auto-create-topics: true

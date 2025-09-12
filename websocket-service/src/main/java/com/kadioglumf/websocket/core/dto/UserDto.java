@@ -2,6 +2,7 @@ package com.kadioglumf.websocket.core.dto;
 
 import com.kadioglumf.websocket.core.enums.RoleTypeEnum;
 import java.util.List;
+import java.util.Set;
 import lombok.*;
 
 @Getter
@@ -13,6 +14,6 @@ public class UserDto implements BaseDto {
   private Long id;
   private String name;
   private String email;
-  private RoleTypeEnum role;
+  private Set<RoleTypeEnum> roles;
   private List<PermissionDto> permissions;
 }

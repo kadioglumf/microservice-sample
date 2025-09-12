@@ -47,12 +47,12 @@ spring:
           api-communication:
             scope: read
             provider: api-communication-provider
-            client-secret: '{YOUR_API_COMMUNICATION_CLIENT_SECRET}'
+            client-secret: 'dkl8UIp8HcCNvnj2F90/OXLtRc/vFlzVYT7rXu04iTg='
             authorization-grant-type: client_credentials
             client-id: api-communication
         provider:
           api-communication-provider:
-            token-uri: http://auth-service-svc:8080/auth-service/oauth2/token
+            token-uri: http://auth-service.service.consul/auth-service/oauth2/token
       authorizationserver:
         issuer: http://auth-service.service.consul
         client:
@@ -62,7 +62,7 @@ spring:
               scopes: read
               client-id: api-communication
               authorization-grant-types: client_credentials
-              client-secret: '{YOUR_API_COMMUNICATION_CLIENT_SECRET}'
+              client-secret: '{noop}dkl8UIp8HcCNvnj2F90/OXLtRc/vFlzVYT7rXu04iTg='
             require-authorization-consent: 'true'
 
 

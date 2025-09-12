@@ -7,31 +7,30 @@ import com.kadioglumf.websocket.payload.response.channel.ChannelResponse;
 import com.kadioglumf.websocket.service.ChannelService;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 @Component
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 public class ChannelValidator {
   private final ChannelService channelService;
 
-  public void valid(String channel, RoleTypeEnum role) {
+  public void valid(String channel, Set<RoleTypeEnum> roles) {
     ChannelResponse channelInfo = channelService.getByName(channel);
     if (channelInfo == null) {
       throw new BusinessException(ExceptionConstants.WEB_SOCKET_ERROR);
     }
-    if (!isRolesAllowed(role, channelInfo.getRoles())) {
+    if (!isRolesAllowed(roles, channelInfo.getRoles())) {
       throw new BusinessException(ExceptionConstants.WEB_SOCKET_ERROR);
     }
   }
 
-  public boolean isRolesAllowed(RoleTypeEnum role, Set<String> allowedRoles) {
+  public boolean isRolesAllowed(Set<RoleTypeEnum> roles, Set<String> allowedRoles) {
     if (CollectionUtils.isEmpty(allowedRoles)) {
       return true;
     }
     for (String allowedRole : allowedRoles) {
-      if (role.name().equals(allowedRole)) {
+      if (roles.stream().anyMatch(r -> r.name().equals(allowedRole))) {
         return true;
       }
     }

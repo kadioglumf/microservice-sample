@@ -1,14 +1,15 @@
 package com.kadioglumf.websocket.payload.response;
 
-import com.kadioglumf.websocket.payload.BaseDto;
+import java.io.Serializable;
+import java.util.Set;
 import lombok.Data;
 
 @Data
-public class GetUserDetailsResponse implements BaseDto {
+public class GetUserDetailsResponse implements Serializable {
   private Long userId;
   private String name;
   private String surname;
   private String email;
   private String phoneNumber;
-  private String role;
+  private Set<String> roles;
 }

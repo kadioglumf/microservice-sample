@@ -108,6 +108,6 @@ public class RealTimeSession {
   }
 
   public boolean isAdmin() {
-    return RoleTypeEnum.ROLE_ADMIN.equals(getUserDetails().getRole());
+    return getUserDetails().getRoles().contains(RoleTypeEnum.ROLE_ADMIN);
   }
 }

@@ -39,6 +39,7 @@ public class SwaggerConfig {
                 .description("Microservice Sample API Documentation")
                 .version("0.1.2")
                 .license(new License().name("Fatih Kadıoğlu")))
-        .externalDocs(new ExternalDocumentation().description("Microservice Sample API Documentation"));
+        .externalDocs(
+            new ExternalDocumentation().description("Microservice Sample API Documentation"));
   }
 }

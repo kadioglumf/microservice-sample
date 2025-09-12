@@ -21,13 +21,4 @@ public class AuthUtils {
     return user.getId();
   }
 
-  public static boolean isPartner() {
-    var user = UserThreadContext.getUser();
-    return user != null && RoleTypeEnum.ROLE_PARTNER.equals(user.getRole());
-  }
-
-  public static boolean isAdmin() {
-    var user = UserThreadContext.getUser();
-    return user != null && RoleTypeEnum.ROLE_ADMIN.equals(user.getRole());
-  }
 }

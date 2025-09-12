@@ -53,7 +53,7 @@ public class ContactUsController {
   @Secure(role = RoleTypeEnum.ROLE_ADMIN)
   @Operation(summary = "Get Contact Request Detail")
   public ResponseEntity<ContactUsDetailResponse> getContactUsDetailForAdmin(
-      @RequestParam String contactRequestId) {
+        @RequestParam String contactRequestId) {
     return ResponseEntity.ok(
         contactUsService.getContactRequestDetail(contactRequestId, SearchRoleType.ADMIN));
   }

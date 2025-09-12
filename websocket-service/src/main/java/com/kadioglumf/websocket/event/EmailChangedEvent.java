@@ -1,6 +1,6 @@
-package com.kadioglumf.authservice.event;
+package com.kadioglumf.websocket.event;
 
-import com.kadioglumf.authservice.core.kafka.DefaultDomainEvent;
+import com.kadioglumf.websocket.core.kafka.DefaultDomainEvent;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,8 +11,7 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @NoArgsConstructor
 @SuperBuilder
-@ToString(callSuper = true)
-public class UserInfoChangedEvent extends DefaultDomainEvent {
+@ToString
+public class EmailChangedEvent extends DefaultDomainEvent {
   private String email;
-  private Long id;
 }

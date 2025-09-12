@@ -81,7 +81,7 @@ public class SecureValidator {
     boolean isValid = true;
 
     if (!CollectionUtils.isEmpty(Arrays.asList(secure.role()))) {
-      isValid = Arrays.stream(secure.role()).anyMatch(r -> r.equals(userDto.getRole()));
+      isValid = Arrays.stream(secure.role()).anyMatch(r -> userDto.getRoles().contains(r));
     }
 
     if (isValid && secure.permissions().length > 0) {

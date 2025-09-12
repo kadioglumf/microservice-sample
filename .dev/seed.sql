@@ -15,8 +15,8 @@ INSERT INTO public.credentials_roles(credential_id, role) VALUES (1, 'ROLE_USER'
 INSERT INTO public.credentials_roles(credential_id, role) VALUES (2, 'ROLE_USER');
 INSERT INTO public.credentials_roles(credential_id, role) VALUES (3, 'ROLE_USER');
 INSERT INTO public.credentials_roles(credential_id, role) VALUES (4, 'ROLE_USER');
-INSERT INTO public.credentials_roles(credential_id, role) VALUES (6, 'ROLE_SYSTEM');
-INSERT INTO public.credentials_roles(credential_id, role) VALUES (7, 'ROLE_MODERATOR');
+INSERT INTO public.credentials_roles(credential_id, role) VALUES (5, 'ROLE_SYSTEM');
+INSERT INTO public.credentials_roles(credential_id, role) VALUES (6, 'ROLE_MODERATOR');
 
 INSERT INTO public.credentials_users(id, create_by_user_id, creation_date, is_deleted, last_update_date, update_by_user_id, created_by_ip_addr, origin, origin_ip_addr, updated_by_ip_addr, user_agent, birth_day, user_address_id, credential_id)
 VALUES
@@ -42,3 +42,15 @@ VALUES
 INSERT INTO public.credentials_permissions (credential_id, permission_id) VALUES (2, 1);
 INSERT INTO public.credentials_permissions (credential_id, permission_id) VALUES (2, 2);
 INSERT INTO public.credentials_permissions (credential_id, permission_id) VALUES (2, 3);
+
+
+
+
+
+-- websocket-service
+
+INSERT INTO public.channel (id, name, creation_date, last_update_date) VALUES (1, 'test-admin-channel', now(), now());
+INSERT INTO public.channel (id, name, creation_date, last_update_date) VALUES (2, 'test-user-channel', now(), now());
+
+INSERT INTO public.channel_roles (channel_id, roles) VALUES (1, 'ROLE_ADMIN');
+INSERT INTO public.channel_roles (channel_id, roles) VALUES (2, 'ROLE_USER');

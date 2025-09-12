@@ -14,11 +14,10 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 @Log4j2
 public class ActionHandler {
   private final ActionHandlerValidator actionHandlerValidator;
@@ -29,7 +28,8 @@ public class ActionHandler {
   @Action(ActionType.SUBSCRIBE)
   public void subscribe(RealTimeSession session, WsSendMessageRequest request) {
     log.debug("RealTimeSession[{}] Subscribe to channel `{}`", session.id(), request.getChannel());
-    actionHandlerValidator.validSubscribe(request.getChannel(), session.getUserDetails().getRole());
+    actionHandlerValidator.validSubscribe(
+        request.getChannel(), session.getUserDetails().getRoles());
     channelService.subscribeChannel(request.getChannel(), session.getUserDetails().getId());
     SubscriptionHubUtils.subscribe(session, request.getChannel());
   }

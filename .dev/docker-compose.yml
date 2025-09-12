@@ -145,6 +145,43 @@ services:
     networks:
       - app-network
 
+  websocket-service-svc:
+    container_name: websocket-service-svc
+    restart: unless-stopped
+    healthcheck:
+      test: "curl --fail --silent localhost:8080/websocket-service/actuator/health | grep UP || exit 1"
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+    ports:
+      - "8087:8080"
+      - "5087:5005"
+    depends_on:
+      consul:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    environment:
+      - JDK_JAVA_OPTIONS=-Xdebug -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=websocket-service
+      - DATABASE_USERNAME=postgres
+      - DATABASE_PASSWORD=12345678
+      - SERVER_PORT=8080
+    build:
+      context: ../../microservice-sample
+      dockerfile: .dev/Dockerfile
+      args:
+        FOLDER: "websocket-service"
+    networks:
+      - app-network
+
   oauth2-ui-app:
     build:
       context: ../oauth2-ui
@@ -196,6 +233,8 @@ services:
       db:
         condition: service_healthy
       auth-service-svc:
+        condition: service_healthy
+      websocket-service-svc:
         condition: service_healthy
     networks:
       - app-network

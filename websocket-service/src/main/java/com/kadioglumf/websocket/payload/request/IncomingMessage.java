@@ -1,12 +1,12 @@
 package com.kadioglumf.websocket.payload.request;
 
-import com.kadioglumf.websocket.payload.*;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.kadioglumf.websocket.core.enums.RoleTypeEnum;
 import com.kadioglumf.websocket.enums.ActionType;
 import com.kadioglumf.websocket.enums.WsCategoryType;
 import com.kadioglumf.websocket.enums.WsInfoType;
 import com.kadioglumf.websocket.enums.WsSendingType;
+import com.kadioglumf.websocket.payload.*;
 import com.kadioglumf.websocket.payload.WsCategoryTypeConverter;
 import com.kadioglumf.websocket.payload.WsInfoTypeConverter;
 import com.kadioglumf.websocket.socket.WebSocketRequestDispatcher;

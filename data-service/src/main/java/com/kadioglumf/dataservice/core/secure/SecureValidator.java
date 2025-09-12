@@ -23,7 +23,7 @@ public class SecureValidator {
     Class<?> targetClass = jp.getTarget().getClass();
     Method interfaceMethod = ((MethodSignature) jp.getSignature()).getMethod();
     Method implementationMethod =
-        targetClass.getMethod(interfaceMethod.getName(), interfaceMethod.getParameterTypes());
+            targetClass.getMethod(interfaceMethod.getName(), interfaceMethod.getParameterTypes());
     SecureGroup secureGroup = implementationMethod.getAnnotation(SecureGroup.class);
     boolean isValid = false;
     for (Secures secures : secureGroup.value()) {
@@ -42,7 +42,7 @@ public class SecureValidator {
     Class<?> targetClass = jp.getTarget().getClass();
     Method interfaceMethod = ((MethodSignature) jp.getSignature()).getMethod();
     Method implementationMethod =
-        targetClass.getMethod(interfaceMethod.getName(), interfaceMethod.getParameterTypes());
+            targetClass.getMethod(interfaceMethod.getName(), interfaceMethod.getParameterTypes());
     Secures secures = implementationMethod.getAnnotation(Secures.class);
     boolean isValid = validateSecures(secures);
     if (!isValid) {
@@ -66,7 +66,7 @@ public class SecureValidator {
     Class<?> targetClass = jp.getTarget().getClass();
     Method interfaceMethod = ((MethodSignature) jp.getSignature()).getMethod();
     Method implementationMethod =
-        targetClass.getMethod(interfaceMethod.getName(), interfaceMethod.getParameterTypes());
+            targetClass.getMethod(interfaceMethod.getName(), interfaceMethod.getParameterTypes());
     Secure secure = implementationMethod.getAnnotation(Secure.class);
     if (!validateSecureAnnotation(secure)) {
       throw new SecureException(ExceptionConstants.UNAUTHORIZED);
@@ -81,7 +81,7 @@ public class SecureValidator {
     boolean isValid = true;
 
     if (!CollectionUtils.isEmpty(Arrays.asList(secure.role()))) {
-      isValid = Arrays.stream(secure.role()).anyMatch(r -> r.equals(userDto.getRole()));
+      isValid = Arrays.stream(secure.role()).anyMatch(r -> userDto.getRoles().contains(r));
     }
 
     if (isValid && secure.permissions().length > 0) {
@@ -92,19 +92,19 @@ public class SecureValidator {
 
   private static Predicate<PermissionDto> isAllMatchChain(Secure secure) {
     return p ->
-        Arrays.stream(secure.permissions())
-            .anyMatch(
-                requiredPermission -> {
-                  if (requiredPermission.equals(p.getPermission())) {
-                    return true;
-                  }
-                  if (p.getPermission().endsWith(".all")) {
-                    String permissionPrefix =
-                        p.getPermission().substring(0, p.getPermission().lastIndexOf(".all"));
-                    return requiredPermission.startsWith(permissionPrefix);
-                  }
+            Arrays.stream(secure.permissions())
+                    .anyMatch(
+                            requiredPermission -> {
+                              if (requiredPermission.equals(p.getPermission())) {
+                                return true;
+                              }
+                              if (p.getPermission().endsWith(".all")) {
+                                String permissionPrefix =
+                                        p.getPermission().substring(0, p.getPermission().lastIndexOf(".all"));
+                                return requiredPermission.startsWith(permissionPrefix);
+                              }
 
-                  return false;
-                });
+                              return false;
+                            });
   }
 }

@@ -50,7 +50,6 @@ public class AuthServiceAdapter {
     return responseEntity.getBody();
   }
 
-  // TODO rol ile kullanıcı detayını getiren servis yok. onu ekleyip url düzenle
   @Cacheable(
       value = CacheConstants.USER_DETAILS_CACHE_VALUE,
       key = "T(com.kadioglumf.websocket.constant.CacheConstants).ROLE_KEY + '_' + #role")
@@ -74,7 +73,6 @@ public class AuthServiceAdapter {
     return responseEntity.getBody();
   }
 
-  // TODO email değiştirildiğinde cache güncellenmeli. süre arttırılabilir
   @Cacheable(
       value = RedisCacheValueConstants.FIVE_MINUTE_CACHE_KEY,
       key = "{#root.methodName, #email}")

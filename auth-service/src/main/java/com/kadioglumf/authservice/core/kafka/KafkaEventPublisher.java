@@ -31,7 +31,7 @@ public class KafkaEventPublisher<T extends DomainEvent> {
       if (event instanceof DefaultDomainEvent de) {
 
         if (UserThreadContext.getUser() != null) {
-          de.setUserId(UserThreadContext.getUser().getId().toString());
+          de.setUserId(UserThreadContext.getUser().getId());
         }
         de.setLocale(UserDeviceDetailsUtils.getUserLocale());
         de.setTransactionTime(LocalDateTime.now());

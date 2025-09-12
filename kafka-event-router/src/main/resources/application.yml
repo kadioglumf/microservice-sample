@@ -19,11 +19,11 @@ server:
 
 apps:
   email-service:
-    consumer-topic-name: email-service-topic
-    events: SendEmailActivationEvent,ChangeEmailEvent,ForgotPasswordEmailEvent,UserInfoChangedEvent
+    consumer-topic-name: websocket-service-topic
+    events: EmailChangedEvent,UserRegisteredEvent
   data-service:
     consumer-topic-name: data-service-topic
-    events: UserInfoChangedEvent
+    events: EmailChangedEvent
 
 project:
   kafka:

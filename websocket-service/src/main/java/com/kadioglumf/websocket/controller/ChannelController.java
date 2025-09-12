@@ -62,7 +62,7 @@ public class ChannelController {
 
   @PostMapping("/subscribe")
   @Operation(summary = "Subscribe Channel")
-  @Secure(role = {RoleTypeEnum.ROLE_USER, RoleTypeEnum.ROLE_ADMIN, RoleTypeEnum.ROLE_PARTNER})
+  @Secure(role = {RoleTypeEnum.ROLE_USER, RoleTypeEnum.ROLE_ADMIN})
   public ResponseEntity<Void> subscribe(@Valid @RequestBody SubscribeChannelRequest request) {
     channelService.subscribeChannel(request.getName(), AuthUtils.getUserId());
     return ResponseEntity.ok().build();
@@ -70,7 +70,7 @@ public class ChannelController {
 
   @PostMapping("/unsubscribe")
   @Operation(summary = "Unsubscribe Channel")
-  @Secure(role = {RoleTypeEnum.ROLE_USER, RoleTypeEnum.ROLE_ADMIN, RoleTypeEnum.ROLE_PARTNER})
+  @Secure(role = {RoleTypeEnum.ROLE_USER, RoleTypeEnum.ROLE_ADMIN})
   public ResponseEntity<Void> unsubscribe(@Valid @RequestBody UnsubscribeChannelRequest request) {
     channelService.unsubscribeChannel(request.getName(), AuthUtils.getUserId());
     return ResponseEntity.ok().build();
@@ -78,7 +78,7 @@ public class ChannelController {
 
   @GetMapping("/getUserChannels")
   @Operation(summary = "Get user Channels")
-  @Secure(role = {RoleTypeEnum.ROLE_USER, RoleTypeEnum.ROLE_ADMIN, RoleTypeEnum.ROLE_PARTNER})
+  @Secure(role = {RoleTypeEnum.ROLE_USER, RoleTypeEnum.ROLE_ADMIN})
   public ResponseEntity<List<UserPreferencesResponse>> getUserChannels() {
     return ResponseEntity.ok(userChannelPreferencesService.getUserChannels(AuthUtils.getUserId()));
   }
